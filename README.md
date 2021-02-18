@@ -22,14 +22,15 @@ vue3 ssr 解决方案
 
 #### vue
 
-- [ ] jsx
+- [x] jsx
+- [ ] vue-meta
 
 #### css
 
 - [x] sass
-- [ ] postcss
+- [x] postcss + postcss-preset-env
 
 #### 工具
 
 - [ ] eslint
-- [ ] babel
+- [x] babel+polyfill

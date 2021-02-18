@@ -17,7 +17,8 @@ vue3 ssr 解决方案
 - [x] vite
 - [x] vue3
 - [x] vue-router
-- [ ] vuex
+- [x] vuex
+- [x] koa
 
 #### vue
 

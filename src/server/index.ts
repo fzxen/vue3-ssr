@@ -44,9 +44,10 @@ async function createServer() {
           .render;
       }
 
-      const { html, preloadLinks } = await render(url, manifest);
+      const { html, preloadLinks, context } = await render(url, manifest);
 
       const responseHTML = template
+        .replace(`<!--initial-state-->`, `<script>window.__INITIAL_STATE__=${JSON.stringify(context.state)}</script>`)
         .replace(`<!--preload-links-->`, preloadLinks)
         .replace(`<!--app-html-->`, html);
 

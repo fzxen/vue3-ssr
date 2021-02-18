@@ -1,6 +1,7 @@
 <template>
   <div class="home-wrap">
     <h2 class="title">This is home page</h2>
+    <p>name:{{$store.state.name}}</p>
     <button @click="goToList">go to list</button>
   </div>
 </template>

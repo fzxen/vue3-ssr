@@ -6,15 +6,16 @@ interface IManifest {
 }
 
 export async function render(url: string, manifest: IManifest) {
-  const { app, router } = createVueApp();
+  const { app, router, store } = createVueApp();
   router.push(url);
   await router.isReady()
 
   const context = {};
   const html = await renderToString(app, context);
   const preloadLinks = renderPreloadLinks((context as any).modules, manifest);
+  Reflect.set(context, 'state', store.state)
 
-  return { html, preloadLinks };
+  return { html, preloadLinks, context };
 }
 
 function renderPreloadLinks(modules: Array<string>, manifest: IManifest) {

@@ -1,5 +1,6 @@
 import { createVueApp } from "./main";
 import { renderToString, SSRContext } from "@vue/server-renderer";
+import { handleHeadInfo } from "./libs/utils";
 
 interface IManifest {
   [prop: string]: any;
@@ -31,7 +32,7 @@ export async function render(url: string, manifest: IManifest) {
   // 设置context
   context.state = store.state;
   const head = router.currentRoute.value.meta.head;
-  context.head = head ? head() : {};
+  context.head = handleHeadInfo(head);
 
   return { code: 200, html, preloadLinks, context };
 }

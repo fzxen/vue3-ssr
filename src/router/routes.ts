@@ -18,10 +18,10 @@ const routes: RouteRecordRaw[] = [
   {
     path: "/list",
     meta: {
-      head: () => ({
+      head: {
         title: "文章列表",
         metas: [{ name: "description", content: "文章列表页" }],
-      }),
+      },
     },
     component: () => import("../views/list.vue"),
   },

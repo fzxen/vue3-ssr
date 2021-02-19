@@ -6,8 +6,7 @@ import c2k from "koa-connect";
 import KoaRouter from "koa-router";
 import compress from "koa-compress";
 import koaStatic from "koa-static";
-import { handleMetaInfo } from "../libs/utils";
-import zlib from 'zlib'
+import zlib from "zlib";
 
 const resolve = (r: string) => path.resolve(__dirname, `../../${r}`);
 
@@ -62,11 +61,8 @@ async function createServer() {
       switch (code) {
         case 200:
           const responseHTML = template
-            .replace("<!--title-->", context.head.title || "")
-            .replace(
-              "<!--meta-tags-->",
-              context.head.metas ? handleMetaInfo(context.head.metas) : ""
-            )
+            .replace("<!--title-->", context.head.title)
+            .replace("<!--meta-tags-->", context.head.metas)
             .replace(`<!--preload-links-->`, preloadLinks)
             .replace(`<!--app-html-->`, html)
             .replace(

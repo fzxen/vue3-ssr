@@ -1,5 +1,5 @@
 import { createVueApp } from "./main";
-import { handleMetaInfo } from "./libs/utils";
+import { handleHeadInfo } from "./libs/utils";
 
 const { app, router, store } = createVueApp();
 
@@ -41,10 +41,9 @@ function setupRouterBeforeResolve() {
     document
       .querySelectorAll("meta[meta-server-render]")
       .forEach((d) => d.remove());
-    const head = to.meta.head;
-    const { title = "", metas = [] } = head ? head() : { title: "", metas: [] };
+    const { title, metas } = handleHeadInfo(to.meta.head);
     document.title = title;
-    document.head.innerHTML = document.head.innerHTML + handleMetaInfo(metas);
+    document.head.innerHTML = document.head.innerHTML + metas;
 
     const matched = to.matched.flatMap((record) =>
       Object.values(record.components)

@@ -7,6 +7,7 @@ import KoaRouter from "koa-router";
 import compress from "koa-compress";
 import koaStatic from "koa-static";
 import { handleMetaInfo } from "../libs/utils";
+import zlib from 'zlib'
 
 const resolve = (r: string) => path.resolve(__dirname, `../../${r}`);
 
@@ -16,14 +17,26 @@ async function createServer() {
   const app = new Koa();
   const router = new KoaRouter();
 
-  const manifest =  isProd ? require('../../dist/client/ssr-manifest.json') : {};
+  const manifest = isProd ? require("../../dist/client/ssr-manifest.json") : {};
   let vite: ViteDevServer;
   let template: string;
   let render: any;
   if (isProd) {
     template = readFileSync(resolve("./dist/client/index.html")).toString();
     render = require("../../dist/server/entry_server.js").render;
-    app.use(compress());
+    app.use(
+      compress({
+        filter(content_type) {
+          return /(javascript|css|png|jpg|jpeg|svg|html)/i.test(content_type);
+        },
+        gzip: {
+          flush: zlib.constants.Z_SYNC_FLUSH,
+        },
+        deflate: {
+          flush: zlib.constants.Z_SYNC_FLUSH,
+        },
+      })
+    );
     app.use(koaStatic(resolve("./dist/client")));
   } else {
     vite = await createViteServer({

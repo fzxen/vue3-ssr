@@ -12,7 +12,7 @@ async function init() {
   await router.isReady();
 
   app.mixin({
-    beforeRouteUpdate(to, from, next) {
+    beforeRouteUpdate(to, _, next) {
       const matched = to.matched.flatMap((record) =>
         Object.values(record.components)
       );
@@ -69,7 +69,7 @@ function setupRouterBeforeResolve() {
         if (c.asyncData) return c.asyncData({ store, router: to });
       })
     )
-      .then((res) => {
+      .then(() => {
         // TODO 将结果 合并到data选项
       })
       .catch(() => {

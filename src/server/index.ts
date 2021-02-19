@@ -16,7 +16,7 @@ async function createServer() {
   const app = new Koa();
   const router = new KoaRouter();
 
-  let manifest = {};
+  const manifest =  isProd ? require('../../dist/client/ssr-manifest.json') : {};
   let vite: ViteDevServer;
   let template: string;
   let render: any;

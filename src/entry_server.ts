@@ -1,5 +1,5 @@
 import { createVueApp } from "./main";
-import { renderToString } from "@vue/server-renderer";
+import { renderToString, SSRContext } from "@vue/server-renderer";
 
 interface IManifest {
   [prop: string]: any;
@@ -24,10 +24,14 @@ export async function render(url: string, manifest: IManifest) {
     )
   );
 
-  const context = {};
+  const context: SSRContext = {};
   const html = await renderToString(app, context);
-  const preloadLinks = renderPreloadLinks((context as any).modules, manifest);
-  Reflect.set(context, "state", store.state);
+  const preloadLinks = renderPreloadLinks(context.modules, manifest);
+
+  // 设置context
+  context.state = store.state;
+  const head = router.currentRoute.value.meta.head;
+  context.head = head ? head() : {};
 
   return { code: 200, html, preloadLinks, context };
 }

@@ -6,8 +6,10 @@ import {
 import routes from "./routes";
 
 export function createRouter() {
-  return _createRouter({
+  const router = _createRouter({
     history: import.meta.env.SSR ? createMemoryHistory() : createWebHistory(),
     routes,
   });
+
+  return router;
 }

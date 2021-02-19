@@ -23,7 +23,7 @@ vue3.x ssr
 #### vue
 
 - [x] jsx
-- [ ] vue-meta
+- [x] customize meta&title
 - [x] asyncData
 
 #### css

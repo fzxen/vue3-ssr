@@ -1,4 +1,5 @@
 import { createVueApp } from "./main";
+import { handleMetaInfo } from "./libs/utils";
 
 const { app, router, store } = createVueApp();
 
@@ -29,13 +30,22 @@ async function init() {
     },
   });
 
-  setupRouterBeforeResolve()
+  setupRouterBeforeResolve();
 
   app.mount("#app");
 }
 
 function setupRouterBeforeResolve() {
   router.beforeResolve((to, from, next) => {
+    // 解析 head
+    document
+      .querySelectorAll("meta[meta-server-render]")
+      .forEach((d) => d.remove());
+    const head = to.meta.head;
+    const { title = "", metas = [] } = head ? head() : { title: "", metas: [] };
+    document.title = title;
+    document.head.innerHTML = document.head.innerHTML + handleMetaInfo(metas);
+
     const matched = to.matched.flatMap((record) =>
       Object.values(record.components)
     );

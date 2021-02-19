@@ -53,24 +53,22 @@ async function createServer() {
     try {
       const url = ctx.url;
 
-      if (!isProd) {
-        template = await vite.transformIndexHtml(url, template);
-      }
-
       const { code, html, preloadLinks, context } = await render(url, manifest);
       switch (code) {
         case 200:
-          const responseHTML = template
-            .replace("<!--title-->", context.head.title)
-            .replace("<!--meta-tags-->", context.head.metas)
-            .replace(`<!--preload-links-->`, preloadLinks)
-            .replace(`<!--app-html-->`, html)
-            .replace(
-              `<!--initial-state-->`,
-              `<script>window.__INITIAL_STATE__=${JSON.stringify(
-                context.state
-              )}</script>`
-            );
+          const responseHTML = isProd
+            ? template
+            : (await vite.transformIndexHtml(url, template))
+                .replace("<!--title-->", context.head.title)
+                .replace("<!--meta-tags-->", context.head.metas)
+                .replace(`<!--preload-links-->`, preloadLinks)
+                .replace(`<!--app-html-->`, html)
+                .replace(
+                  `<!--initial-state-->`,
+                  `<script>window.__INITIAL_STATE__=${JSON.stringify(
+                    context.state
+                  )}</script>`
+                );
 
           ctx.status = code;
           ctx.body = responseHTML;

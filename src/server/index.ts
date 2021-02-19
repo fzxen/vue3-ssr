@@ -18,7 +18,11 @@ async function createServer() {
 
   let manifest = {};
   let vite: ViteDevServer;
+  let template: string;
+  let render: any;
   if (isProd) {
+    template = readFileSync(resolve("./dist/client/index.html")).toString();
+    render = require("../../dist/server/entry_server.js").render;
     app.use(compress());
     app.use(koaStatic(resolve("./dist/client")));
   } else {
@@ -26,6 +30,10 @@ async function createServer() {
       server: { middlewareMode: true },
     });
     app.use(c2k(vite.middlewares));
+
+    template = readFileSync(resolve("./index.html")).toString();
+    render = (await vite.ssrLoadModule(resolve("./src/entry_server.ts")))
+      .render;
   }
 
   app.use(async (ctx) => {
@@ -33,16 +41,8 @@ async function createServer() {
     try {
       const url = ctx.url;
 
-      let render;
-      let template;
-      if (isProd) {
-        template = readFileSync(resolve("./dist/client/index.html")).toString();
-        render = require("../../dist/server/entry_server.js").render;
-      } else {
-        template = readFileSync(resolve("./index.html")).toString();
+      if (!isProd) {
         template = await vite.transformIndexHtml(url, template);
-        render = (await vite.ssrLoadModule(resolve("./src/entry_server.ts")))
-          .render;
       }
 
       const { code, html, preloadLinks, context } = await render(url, manifest);

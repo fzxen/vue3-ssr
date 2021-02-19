@@ -1,7 +1,7 @@
 <template>
   <div class="home-wrap">
     <h2 class="title">This is home page</h2>
-    <p>name:{{$store.state.name}}</p>
+    <p>name:{{ $store.state.name }}</p>
     <ul class="list">
       <li class="lite-item">1</li>
       <li class="lite-item">2</li>

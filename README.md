@@ -1,14 +1,14 @@
 # vue3-ssr
 
-## 简介
+## Description
 
-vue3 ssr 解决方案
+vue3.x ssr
 
 ## How to use?
 
-`npm run dev`: start project in the mode of development
+`npm run dev`: start project in development mode
 
-`npm run server`: start project in the mode of production. Project will be built before starting.
+`npm run server`: start project in production mode. Project will be built before starting.
 
 `npm run build`: build project
 
@@ -24,13 +24,14 @@ vue3 ssr 解决方案
 
 - [x] jsx
 - [ ] vue-meta
+- [x] asyncData
 
 #### css
 
 - [x] sass
 - [x] postcss + postcss-preset-env
 
-#### 工具
+#### other
 
 - [ ] eslint
 - [x] babel+polyfill

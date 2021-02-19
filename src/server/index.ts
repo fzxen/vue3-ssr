@@ -44,19 +44,31 @@ async function createServer() {
           .render;
       }
 
-      const { html, preloadLinks, context } = await render(url, manifest);
+      const { code, html, preloadLinks, context } = await render(url, manifest);
+      switch (code) {
+        case 200:
+          const responseHTML = template
+            .replace(
+              `<!--initial-state-->`,
+              `<script>window.__INITIAL_STATE__=${JSON.stringify(
+                context.state
+              )}</script>`
+            )
+            .replace(`<!--preload-links-->`, preloadLinks)
+            .replace(`<!--app-html-->`, html);
 
-      const responseHTML = template
-        .replace(`<!--initial-state-->`, `<script>window.__INITIAL_STATE__=${JSON.stringify(context.state)}</script>`)
-        .replace(`<!--preload-links-->`, preloadLinks)
-        .replace(`<!--app-html-->`, html);
-
-      ctx.status = 200;
-      ctx.body = responseHTML;
+          ctx.status = code;
+          ctx.body = responseHTML;
+          break;
+        case 404:
+          ctx.status = 404;
+          ctx.body = "404 Not Found";
+          break;
+      }
     } catch (err) {
       vite && vite.ssrFixStacktrace(err);
       ctx.status = 500;
-      ctx.body = err.stack;
+      ctx.body = "Server Error";
     }
   });
 

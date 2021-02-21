@@ -21,7 +21,7 @@ export async function render(url: string, manifest: IManifest) {
   await Promise.all(
     matchedComponents.map(
       (com: any) =>
-        com.asyncData && com.asyncData({ store, route: router.currentRoute })
+        com.asyncData && com.asyncData({ store, route: router.currentRoute.value })
     )
   );
 

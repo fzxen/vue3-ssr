@@ -65,7 +65,7 @@ function setupRouterBeforeResolve() {
 
     Promise.all(
       activated.map((c: any) => {
-        if (c.asyncData) return c.asyncData({ store, router: to });
+        if (c.asyncData) return c.asyncData({ store, route: to });
       })
     )
       .then(() => {

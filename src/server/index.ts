@@ -3,7 +3,7 @@ import Koa from "koa";
 import { readFileSync } from "fs";
 import path from "path";
 import c2k from "koa-connect";
-import KoaRouter from "koa-router";
+import controller from "./controller";
 import compress from "koa-compress";
 import koaStatic from "koa-static";
 import zlib from "zlib";
@@ -14,7 +14,6 @@ const isProd = process.env.NODE_ENV === "production";
 
 async function createServer() {
   const app = new Koa();
-  const router = new KoaRouter();
 
   const manifest = isProd ? require("../../dist/client/ssr-manifest.json") : {};
   let vite: ViteDevServer;
@@ -48,46 +47,48 @@ async function createServer() {
       .render;
   }
 
-  app.use(async (ctx) => {
-    console.log("收到请求：", ctx.url);
-    try {
-      const url = ctx.url;
-
-      const { code, html, preloadLinks, context } = await render(url, manifest);
-      switch (code) {
-        case 200:
-          const responseHTML = isProd
-            ? template
-            : (await vite.transformIndexHtml(url, template))
-                .replace("<!--title-->", context.head.title)
-                .replace("<!--meta-tags-->", context.head.metas)
-                .replace(`<!--preload-links-->`, preloadLinks)
-                .replace(`<!--app-html-->`, html)
-                .replace(
-                  `<!--initial-state-->`,
-                  `<script>window.__INITIAL_STATE__=${JSON.stringify(
-                    context.state
-                  )}</script>`
-                );
-
-          ctx.status = code;
-          ctx.body = responseHTML;
-          break;
-        case 404:
-          ctx.status = 404;
-          ctx.body = "404 Not Found";
-          break;
-      }
-    } catch (err) {
-      vite && vite.ssrFixStacktrace(err);
-      ctx.status = 500;
-      ctx.body = "Server Error";
-    }
-  });
-
   app
-    .use(router.routes())
-    .use(router.allowedMethods())
+    .use(controller.routes())
+    .use(controller.allowedMethods())
+    .use(async (ctx) => {
+      console.log("收到请求：", ctx.url);
+      try {
+        const url = ctx.url;
+
+        const { code, html, preloadLinks, context } = await render(
+          url,
+          manifest
+        );
+        switch (code) {
+          case 200:
+            const responseHTML = isProd
+              ? template
+              : (await vite.transformIndexHtml(url, template))
+                  .replace("<!--title-->", context.head.title)
+                  .replace("<!--meta-tags-->", context.head.metas)
+                  .replace(`<!--preload-links-->`, preloadLinks)
+                  .replace(`<!--app-html-->`, html)
+                  .replace(
+                    `<!--initial-state-->`,
+                    `<script>window.__INITIAL_STATE__=${JSON.stringify(
+                      context.state
+                    )}</script>`
+                  );
+
+            ctx.status = code;
+            ctx.body = responseHTML;
+            break;
+          case 404:
+            ctx.status = 404;
+            ctx.body = "404 Not Found";
+            break;
+        }
+      } catch (err) {
+        vite && vite.ssrFixStacktrace(err);
+        ctx.status = 500;
+        ctx.body = "Server Error";
+      }
+    })
     .listen(3001, () => {
       console.log("listen on: http://localhost:3001");
     });
